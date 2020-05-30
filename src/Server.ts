@@ -1,7 +1,7 @@
 import * as bodyParser from 'body-parser';
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
-import { ImagesController } from './controllers/ImagesController';
+import ImagesController from './controllers/ImagesController';
 
 export default class extends Server {
 

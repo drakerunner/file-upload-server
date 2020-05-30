@@ -1,40 +1,28 @@
-import { OK, BAD_REQUEST } from 'http-status-codes';
+import { OK, NO_CONTENT, BAD_REQUEST } from 'http-status-codes';
 import { Request, Response } from 'express';
 import { Controller, Middleware, Get, Put, Post, Delete } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 
-@Controller('api')
-export class ImagesController {
+import ImagesRepository from '../repositories/ImagesRepository';
+
+@Controller('api/images')
+export default class {
+  private repository = new ImagesRepository();
+
   @Get('')
-  private getAll(req: Request, res: Response) {
+  private async getAll(req: Request, res: Response) {
     Logger.Info('Get All', true);
-    return res.status(OK).json(images);
+
+    return res.status(OK).json(await this.repository.getAll());
+  }
+
+  @Delete(':friendlyName')
+  private async delete(req: Request, res: Response) {
+    const { friendlyName } = req.params;
+
+    Logger.Info(`Deleting file: ${friendlyName}`, true);
+    await this.repository.remove(friendlyName);
+
+    return res.status(NO_CONTENT).json();
   }
 }
-
-
-const images = [{
-  friendlyName: 'Doc1',
-  size: 100,
-  data: ''
-}, {
-  friendlyName: 'Doc2',
-  size: 100,
-  data: ''
-}, {
-  friendlyName: 'Doc3',
-  size: 100,
-  data: ''
-}, {
-  friendlyName: 'Doc4',
-  size: 100,
-  data: ''
-}, {
-  friendlyName: 'Doc5',
-  size: 100,
-  data: ''
-}, {
-  friendlyName: 'Doc6',
-  size: 100,
-  data: ''
-}];
