@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "ts",
+  "ignore": [
+    "src/public"
+  ],
+  "exec": "npx eslint . --ext .ts,.tsx && NODE_ENV=development ts-node src/start.ts"
+}
