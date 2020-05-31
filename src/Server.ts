@@ -1,4 +1,6 @@
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+
 import { Server } from '@overnightjs/core';
 import { Logger } from '@overnightjs/logger';
 import ImagesController from './controllers/ImagesController';
@@ -9,6 +11,7 @@ export default class extends Server {
 
   constructor() {
     super(true);
+    this.app.use(cors());
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.setupControllers();
