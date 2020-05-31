@@ -29,13 +29,10 @@ export default class {
   async search(pattern: string): Promise<Image[]> {
     Logger.Info({ category: 'ImageRepository.search', pattern }, true);
     const images = (await this.getImages());
-    const matches = images
-      .find(({ friendlyName }: Image) => friendlyName?.indexOf(pattern) >= 0)
+
+    return images
+      .filter(({ friendlyName }: Image) => friendlyName?.indexOf(pattern) >= 0)
       .value() || [];
-
-    if (Array.isArray(matches)) return matches
-
-    return [matches];
   }
 
   async add(friendlyName: string, size: number, fileName: string): Promise<void> {
