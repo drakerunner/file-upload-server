@@ -3,6 +3,7 @@ import * as Lowdb from 'lowdb';
 import * as FileAsync from 'lowdb/adapters/FileAsync';
 
 import * as fs from 'fs';
+import validateFilename from '../validators/validateFilename';
 
 const adapter = new FileAsync('db.json');
 
@@ -30,8 +31,9 @@ export default class {
     Logger.Info({ category: 'ImageRepository.search', pattern }, true);
     const images = (await this.getImages());
 
+    pattern = pattern.toUpperCase();
     return images
-      .filter(({ friendlyName }: Image) => friendlyName?.indexOf(pattern) >= 0)
+      .filter(({ friendlyName }: Image) => friendlyName?.toUpperCase().indexOf(pattern) >= 0)
       .value() || [];
   }
 
@@ -68,8 +70,12 @@ export default class {
   }
 
   private async getImages(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
-    return (await this.getDb())
+    return (await this.getDb() as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .get('images')
+      .filter(({ friendlyName, fileName, size }: Image) =>
+        validateFilename(friendlyName).isValid() &&
+        validateFilename(fileName).isValid() &&
+        typeof (size) === 'number')
       ;
   }
 

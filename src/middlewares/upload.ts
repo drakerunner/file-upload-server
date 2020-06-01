@@ -1,12 +1,12 @@
-import { UNSUPPORTED_MEDIA_TYPE, INTERNAL_SERVER_ERROR } from 'http-status-codes';
+import { UNSUPPORTED_MEDIA_TYPE, INTERNAL_SERVER_ERROR, BAD_REQUEST } from 'http-status-codes';
 import { RequestHandler } from 'express';
 
 import * as multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-
 import * as path from 'path';
 
-const allowedExtensions = ['.jpg', '.png', '.jpeg']
+import validateFilename from '../validators/validateFilename';
+
 const mimeTypesWhiteList = ['image/png', 'image/jpg', 'image/jpeg']
 
 const _10MB = 10485760;
@@ -14,13 +14,13 @@ const _10MB = 10485760;
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, 'public'),
   filename: (req, file, cb) => {
-    const extention = path.extname(file.originalname);
+    const validation = validateFilename(file.originalname);
 
-    if (allowedExtensions.indexOf(extention) >= 0) {
-      cb(null, `${uuidv4()}${extention}`);
+    if (validation.isValid()) {
+      cb(null, `${uuidv4()}${path.extname(file.originalname)}`);
     }
     else {
-      cb(new UnsupportedMediaTypeError(), "");
+      cb(new BadRequestError(), "");
     }
   }
 });
@@ -60,6 +60,14 @@ class UnsupportedMediaTypeError extends UploadError {
 
   constructor() {
     super('UNSUPPORTED_MEDIA_TYPE');
+  }
+}
+
+class BadRequestError extends UploadError {
+  code = BAD_REQUEST;
+
+  constructor() {
+    super('BAD_REQUEST');
   }
 }
 
