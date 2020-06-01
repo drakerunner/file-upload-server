@@ -22,14 +22,22 @@ export default class {
 
   async getAll(): Promise<Image[]> {
     Logger.Info({ category: 'ImageRepository.getAll' }, true);
-    const images = (await this.getImages());
+    const images = (await this.getImages())
+      .filter(({ friendlyName, fileName, size }: Image) =>
+        validateFilename(friendlyName).isValid() &&
+        validateFilename(fileName).isValid() &&
+        typeof (size) === 'number');
 
     return images.value() || [];
   }
 
   async search(pattern: string): Promise<Image[]> {
     Logger.Info({ category: 'ImageRepository.search', pattern }, true);
-    const images = (await this.getImages());
+    const images = (await this.getImages())
+      .filter(({ friendlyName, fileName, size }: Image) =>
+        validateFilename(friendlyName).isValid() &&
+        validateFilename(fileName).isValid() &&
+        typeof (size) === 'number');
 
     pattern = pattern.toUpperCase();
     return images
@@ -72,10 +80,6 @@ export default class {
   private async getImages(): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
     return (await this.getDb() as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .get('images')
-      .filter(({ friendlyName, fileName, size }: Image) =>
-        validateFilename(friendlyName).isValid() &&
-        validateFilename(fileName).isValid() &&
-        typeof (size) === 'number')
       ;
   }
 
